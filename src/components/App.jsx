@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import style from './App.module.css';
 import Section from './Section/Section';
 import FeedbackOptions from './FeedbackOptions/FeedbackOptions';
@@ -6,25 +6,25 @@ import Statistics from './Statistics/Statistics';
 import Notification from './Notification/Notification';
 
 const App = () => {
-  const [feedback, setFeedback] = useState({ good: 0, neutral: 0, bad: 0 });
+  const [feedback, setFedback] = useState({ good: 0, neutral: 0, bad: 0 });
 
-  const onLeaveFeedback = state => {
-    setFeedback(prevState => ({
+  const onLeaveFeedback = useCallback(state => {
+    setFedback(prevState => ({
       ...prevState,
       [state]: prevState[state] + 1,
     }));
-  };
+  }, []);
 
-  const countTotalFeedback = () => {
+  const countTotalFeedback = useCallback(() => {
     const { good, neutral, bad } = feedback;
     return good + neutral + bad;
-  };
+  }, [feedback]);
 
-  const countPositiveFeedbackPercentage = () => {
+  const countPositiveFeedbackPercentage = useCallback(() => {
     const { good } = feedback;
     const total = countTotalFeedback();
     return total ? Math.round((good / total) * 100) : 0;
-  };
+  }, [feedback, countTotalFeedback]);
 
   const { good, neutral, bad } = feedback;
   const options = Object.keys(feedback);
