@@ -1,33 +1,26 @@
-import React, { useState, useCallback } from 'react';
+import React from 'react';
+import { useFeedback } from './hooks/useFeedback';
 import style from './App.module.css';
 import Section from './Section/Section';
 import FeedbackOptions from './FeedbackOptions/FeedbackOptions';
 import Statistics from './Statistics/Statistics';
 import Notification from './Notification/Notification';
 
+const GOOD = 'good';
+const NEUTRAL = 'neutral';
+const BAD = 'bad';
+
+const INITIAL_STATE = { [GOOD]: 0, [NEUTRAL]: 0, [BAD]: 0 };
+
 const App = () => {
-  const [feedback, setFedback] = useState({ good: 0, neutral: 0, bad: 0 });
+  const {
+    feedback,
+    onLeaveFeedback,
+    countTotalFeedback,
+    countPositiveFeedbackPercentage,
+  } = useFeedback(INITIAL_STATE);
 
-  const onLeaveFeedback = useCallback(state => {
-    setFedback(prevState => ({
-      ...prevState,
-      [state]: prevState[state] + 1,
-    }));
-  }, []);
-
-  const countTotalFeedback = useCallback(() => {
-    const { good, neutral, bad } = feedback;
-    return good + neutral + bad;
-  }, [feedback]);
-
-  const countPositiveFeedbackPercentage = useCallback(() => {
-    const { good } = feedback;
-    const total = countTotalFeedback();
-    return total ? Math.round((good / total) * 100) : 0;
-  }, [feedback, countTotalFeedback]);
-
-  const { good, neutral, bad } = feedback;
-  const options = Object.keys(feedback);
+  const options = Object.keys(INITIAL_STATE);
 
   return (
     <div className={style.container}>
@@ -37,9 +30,9 @@ const App = () => {
       <Section title="Statistics">
         {countTotalFeedback() > 0 ? (
           <Statistics
-            good={good}
-            neutral={neutral}
-            bad={bad}
+            good={feedback[GOOD]}
+            neutral={feedback[NEUTRAL]}
+            bad={feedback[BAD]}
             total={countTotalFeedback()}
             positivePercentage={countPositiveFeedbackPercentage()}
           />
